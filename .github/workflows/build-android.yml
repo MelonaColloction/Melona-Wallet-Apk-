@@ -1,0 +1,29 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build with Docker
+        run: |
+          docker run --rm \
+            -v $(pwd):/app \
+            -v ~/.buildozer:/home/user/.buildozer \
+            kivy/buildozer \
+            android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: melona-wallet-apk
+          path: ./bin/*.apk
